@@ -1,5 +1,5 @@
 language: csharp
-solution: AdminService.sln
+solution: AdminService/AdminService.sln
 mono: none
 dotnet: 3.1.100
 script:
