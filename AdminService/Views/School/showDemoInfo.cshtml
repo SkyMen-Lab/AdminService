@@ -1,0 +1,35 @@
+@model AdminService.Models.SchoolModel
+@{
+    ViewData["Title"]="School Management Interface";
+}
+<h1>@ViewData["Title"]</h1>
+
+<h2>Demo School Infomation</h2>
+
+<body>
+<table width="600" border="2">
+  <tbody>
+    <tr>
+      <th scope="row">Name</th>
+      <td>@Model.Name</td>
+    </tr>
+    <tr>
+      <th scope="row">Description</th>
+      <td>@Model.Description</td>
+    </tr>
+    <tr>
+      <th scope="row">Website</th>
+      <td><a href=@Model.Website>@Model.Website</a></td>
+    </tr>
+    <tr>
+      <th scope="row">State</th>
+      <td>@Model.State</td>
+    </tr>
+    <tr>
+      <th scope="row">PostalCode</th>
+      <td>@Model.PostalCode</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+

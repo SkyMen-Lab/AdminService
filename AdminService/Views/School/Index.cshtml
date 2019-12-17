@@ -1,7 +1,10 @@
 @{
-    ViewData["Title"] = "School Info";
+    ViewData["Title"]="School Management Interface";
 }
-
 <h1>@ViewData["Title"]</h1>
-
-<p>School Management Interface</p>
+<ul>
+    @for (int i = 0;i<(int)ViewData["repTimes"];i++)
+    {
+        <li>@ViewData["SchName"]</li>
+    }
+</ul>

@@ -3,19 +3,30 @@ using System.Collections.Generic;
 using System.Collections;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
-
+using AdminService.Models;
 namespace AdminService.Controllers
 {
     public class SchoolController : Controller
     {
         //
         // GET: /school/
-        public string Index()
+        public IActionResult Index(string name, int repTimes)
         {
-            return "Default view";
+            ViewData["SchName"] = name;
+            ViewData["repTimes"] = repTimes;
+            return View();
         }
-        public string detail(string name){
-            return HtmlEncoder.Default.Encode($"Infomation regarding to school {name}:");
+        public IActionResult showDemoInfo()
+        {
+            var bedford = new SchoolModel()
+            {
+                Name = "Bedford School",
+                Description = "Host School",
+                Website = "https://www.bedfordschool.org.uk",
+                State = "Bedford",
+                PostalCode = "MK40 2TT"
+            };
+            return View(bedford);
         }
     }
 }
