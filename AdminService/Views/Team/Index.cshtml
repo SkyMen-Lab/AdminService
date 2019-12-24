@@ -1,0 +1,35 @@
+@model GameStorage.Domain.Models.Team;
+@{
+    ViewData["Title"]="Team Management Interface";
+}
+<h1>@ViewData["Title"]</h1>
+
+<h2>Top Team Infomation</h2>
+
+<body>
+<table width="600" border="2">
+  <tbody>
+    <tr>
+      <th scope="row">ID</th>
+      <td>@Model.Id</td>
+    </tr>
+    <tr>
+      <th scope="row">Code</th>
+      <td>@Model.Code</td>
+    </tr>
+    <tr>
+      <th scope="row">Name</th>
+      <td>@Model.Name</td>
+    </tr>
+    <tr>
+      <th scope="row">Rank</th>
+      <td>@Model.Rank</td>
+    </tr>
+    <tr>
+      <th scope="row">ConfigID</th>
+      <td>@Model.ConfigId</td>
+    </tr>
+  </tbody>
+</table>
+</body>
+
