@@ -3,12 +3,15 @@
     ViewData["Title"]="Team Management Interface";
 }
 <h1>@ViewData["Title"]</h1>
-
+@if ((int)ViewData["TeamCountforDisplay"]==-1){
+      <h3>Connection Failure: Connection was refused while connecting to GameStorageService</h3>
+    } else{
 <h2>Top Team Infomation</h2>
 
 <p>This page will display the top 10 team in our database</p>
 <body>
   <ul>
+    
     @if ((int)ViewData["TeamCountforDisplay"]==0) {
       <p>Sorry, no team was found in the database.</p>
     } else 
@@ -40,7 +43,8 @@
 </table>
 <h3></h3>
     }
-
+<a href="/team/create">(Demo) Team Creation</a>
 </ul>
 </body>
 
+    }
