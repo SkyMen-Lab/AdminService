@@ -1,4 +1,4 @@
-@model GameStorage.Domain.Models.Team;
+@model List<GameStorage.Domain.Models.Team>;
 @{
     ViewData["Title"]="Team Management Interface";
 }
@@ -6,30 +6,41 @@
 
 <h2>Top Team Infomation</h2>
 
+<p>This page will display the top 10 team in our database</p>
 <body>
-<table width="600" border="2">
+  <ul>
+    @if ((int)ViewData["TeamCountforDisplay"]==0) {
+      <p>Sorry, no team was found in the database.</p>
+    } else 
+    @for (int i = 0;i<(int)ViewData["TeamCountforDisplay"];i++)
+    {
+      <table width="600" border="3">
   <tbody>
     <tr>
       <th scope="row">ID</th>
-      <td>@Model.Id</td>
+      <td>@Model[i].Id</td>
     </tr>
     <tr>
       <th scope="row">Code</th>
-      <td>@Model.Code</td>
+      <td>@Model[i].Code</td>
     </tr>
     <tr>
       <th scope="row">Name</th>
-      <td>@Model.Name</td>
+      <td>@Model[i].Name</td>
     </tr>
     <tr>
       <th scope="row">Rank</th>
-      <td>@Model.Rank</td>
+      <td>@Model[i].Rank</td>
     </tr>
     <tr>
       <th scope="row">ConfigID</th>
-      <td>@Model.ConfigId</td>
+      <td>@Model[i].ConfigId</td>
     </tr>
   </tbody>
 </table>
+<h3></h3>
+    }
+
+</ul>
 </body>
 

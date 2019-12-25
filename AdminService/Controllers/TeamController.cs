@@ -25,7 +25,8 @@ namespace AdminService.Controllers
                     data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
                 }
             }
-            return View(data[0]);
+            ViewData["TeamCountforDisplay"] = data.Count();
+            return View(data);
         }
     }    
 }
