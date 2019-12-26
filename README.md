@@ -13,6 +13,15 @@ For now, the dashboard is a basic ASP.NET Core MVC application with no database 
 - Newtonsoft.JSON 
 - REST API
 
+## Setup
+### Upstream API Address Setup
+Please set the correct ServerAddress in appSettings.json before running the web app.
+```
+"ServerAddress":{
+    "StorageServerAddress": "http://<your-upstream-storage-server>:<port>"
+  }
+```
+
 ## Contribution
 All developers are always welcome to contribute to the project and open issues and pull-requests with appropriate messages.
 
