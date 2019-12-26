@@ -20,12 +20,11 @@ namespace AdminService.Controllers
             List<Team> data = new List<Team>();
             using (HttpClient client = new HttpClient())
             {
-                try{
-                using (HttpResponseMessage res = await client.GetAsync(baseUrl))
+                try
                 {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
                     string jsonContent = await res.Content.ReadAsStringAsync();
                     data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
-                }
                 } catch {ViewData["TeamCountforDisplay"] = -1; return View(); }
             }
             ViewData["TeamCountforDisplay"] = data.Count();

@@ -2,49 +2,51 @@
 @{
     ViewData["Title"]="Team Management Interface";
 }
-<h1>@ViewData["Title"]</h1>
-@if ((int)ViewData["TeamCountforDisplay"]==-1){
-      <h3>Connection Failure: Connection was refused while connecting to GameStorageService</h3>
-    } else{
-<h2>Top Team Infomation</h2>
-
-<p>This page will display the top 10 team in our database</p>
 <body>
-  <ul>
-    
-    @if ((int)ViewData["TeamCountforDisplay"]==0) {
-      <p>Sorry, no team was found in the database.</p>
-    } else 
-    @for (int i = 0;i<(int)ViewData["TeamCountforDisplay"];i++)
+    <h1>@ViewData["Title"]</h1>
+    @if ((int)ViewData["TeamCountforDisplay"]==-1){
+          <h3>Connection Failure: Connection was refused while connecting to GameStorageService</h3>
+        }
+    else
     {
-      <table width="600" border="3">
-  <tbody>
-    <tr>
-      <th scope="row">ID</th>
-      <td>@Model[i].Id</td>
-    </tr>
-    <tr>
-      <th scope="row">Code</th>
-      <td>@Model[i].Code</td>
-    </tr>
-    <tr>
-      <th scope="row">Name</th>
-      <td>@Model[i].Name</td>
-    </tr>
-    <tr>
-      <th scope="row">Rank</th>
-      <td>@Model[i].Rank</td>
-    </tr>
-    <tr>
-      <th scope="row">ConfigID</th>
-      <td>@Model[i].ConfigId</td>
-    </tr>
-  </tbody>
-</table>
-<h3></h3>
+      <h2>Top Team Infomation</h2>
+      <p>This page will display the top 10 team in our database</p>
+    
+      @if ((int) ViewData["TeamCountforDisplay"] == 0)
+      {
+        <p>Sorry, no team was found in the database.</p>
+      }
+      else
+      {
+        @for (int i = 0; i < (int) ViewData["TeamCountforDisplay"]; i++)
+        {
+          <table width="600" border="3">
+            <tbody>
+            <tr>
+              <th scope="row">ID</th>
+              <td>@Model[i].Id</td>
+            </tr>
+            <tr>
+              <th scope="row">Code</th>
+              <td>@Model[i].Code</td>
+            </tr>
+            <tr>
+              <th scope="row">Name</th>
+              <td>@Model[i].Name</td>
+            </tr>
+            <tr>
+              <th scope="row">Rank</th>
+              <td>@Model[i].Rank</td>
+            </tr>
+            <tr>
+              <th scope="row">ConfigID</th>
+              <td>@Model[i].ConfigId</td>
+            </tr>
+            </tbody>
+          </table>
+          <h3></h3>
+        }
+      }
     }
-<a href="/team/create">(Demo) Team Creation</a>
-</ul>
+    <a href="/team/create">(Demo) Team Creation</a>
 </body>
-
-    }
