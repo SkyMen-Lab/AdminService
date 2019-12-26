@@ -9,14 +9,20 @@ using System.Text.Encodings.Web;
 using AdminService.Models;
 using GameStorage.Domain.Models;
 using System.Net.Http;
+using Microsoft.Extensions.Configuration;
 namespace AdminService.Controllers
 {
     public class TeamController : Controller
     {
+        IConfiguration _configuration;
+        public TeamController(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
         [Route("/team")]
         public async Task<IActionResult> Index()
         {
-            string baseUrl = "http://localhost:5000/api/team";
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
             List<Team> data = new List<Team>();
             using (HttpClient client = new HttpClient())
             {
@@ -25,13 +31,15 @@ namespace AdminService.Controllers
                     using HttpResponseMessage res = await client.GetAsync(baseUrl);
                     string jsonContent = await res.Content.ReadAsStringAsync();
                     data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
-                } catch {ViewData["TeamCountforDisplay"] = -1; return View(); }
+                }
+                catch { ViewData["TeamCountforDisplay"] = -1; return View(); }
             }
             ViewData["TeamCountforDisplay"] = data.Count();
             return View(data);
         }
         [Route("/team/create")]
-        public async Task<IActionResult> Create(Team team){
+        public async Task<IActionResult> Create(Team team)
+        {
             //only for testing
             team = new Team();
             team.Name = "Demo Post School";
@@ -41,13 +49,13 @@ namespace AdminService.Controllers
             config.ConnectionType = 0;
             team.Config = config;
             //
-            string baseUrl = "http://localhost:5000/api/team/create";
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/create";
             using (HttpClient client = new HttpClient())
             {
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
-                try{res = await client.PostAsync(baseUrl,new StringContent(json, Encoding.UTF8, "application/json"));} 
-                catch { ViewData["UpstreamResponse"] = "Failed to connect to GameStorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View();}
+                try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
+                catch { ViewData["UpstreamResponse"] = "Failed to connect to GameStorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View(); }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
                 if (resContent.Contains(":201")) ViewData["UpstreamResponse"] = "Success";
@@ -56,5 +64,5 @@ namespace AdminService.Controllers
                 return View();
             }
         }
-    }    
+    }
 }
