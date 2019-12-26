@@ -55,11 +55,34 @@ namespace AdminService.Controllers
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
                 try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
-                catch { ViewData["UpstreamResponse"] = "Failed to connect to GameStorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View(); }
+                catch { ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View(); }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains(":409")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
-                if (resContent.Contains(":201")) ViewData["UpstreamResponse"] = "Success";
-                if (resContent.Contains(":415")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
+                if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
+                //Request was successful Response Conatins Newly Created Team as raw json 
+                if (resContent.Contains("routerIpAddress")) ViewData["UpstreamResponse"] = "Success. The team has been created.";
+                if (resContent.Contains(":415,")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
+                ViewData["UpstreamRawResponse"] = resContent;
+                return View();
+            }
+        }
+        [Route("/team/delete")]
+        public async Task<IActionResult> Delete(string ID)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/delete/" + ID;
+            using (HttpClient client = new HttpClient())
+            {
+                var res = new HttpResponseMessage();
+                try {  
+                    res = await client.DeleteAsync(baseUrl); 
+                } catch
+                {
+                ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; 
+                ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; 
+                return View(); 
+                }
+                string resContent = await res.Content.ReadAsStringAsync();
+                if (resContent.Contains("winningRate")) ViewData["UpstreamResponse"] = "Success. The team has been deleted.";
+                if (resContent.Contains(":404,")) ViewData["UpstreamResponse"] = "Error: The code is not vaild.";
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View();
             }

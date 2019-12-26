@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"]="Team Deletion Interface";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h3>Team ID to delete:</h3>
+
+@using (Html.BeginForm("Delete","team",FormMethod.Post)) 
+{
+   <input type="text" name="ID" id="ID" />
+   <input type="submit" value="Delete" />
+}
+
+<div>
+    <p>@ViewData["UpstreamResponse"]</p>
+    <p>@ViewData["UpstreamRawResponse"]</p>
+</div>
