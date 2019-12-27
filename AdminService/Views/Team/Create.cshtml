@@ -2,5 +2,23 @@
     ViewData["Title"]="Team Creation Interface";
 }
 <h1>@ViewData["Title"]</h1>
+
+@if ((string)ViewData["Submitted?"]=="false")
+{
+    <form asp-controller="Team" method="post">
+        <div>School Name</div>
+        <input type="text" name="Name" />
+        <div>RouterIPAddress</div>
+        <input type="text" name="IP" />
+        <div>Port</div>
+        <input type="text" name="Port" />
+        <div>ConnectionType (Optional)</div>
+        <input type="text" name="Type" />
+        <p></p>
+        <input type="submit" value="Create" formaction="CreateTeam"/>
+        <div style=color:red>@ViewData["ErrMsg"]</div>
+    </form>
+}
+
 <h3>@ViewData["UpstreamResponse"]</h3>
 <p>@ViewData["UpstreamRawResponse"]</p>

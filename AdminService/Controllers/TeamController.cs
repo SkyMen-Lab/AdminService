@@ -1,16 +1,17 @@
-using System.Linq;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 using System;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using AdminService.Models;
 using GameStorage.Domain.Models;
-using System.Net.Http;
-using Microsoft.Extensions.Configuration;
+
 namespace AdminService.Controllers
 {
     public class TeamController : Controller
@@ -20,6 +21,7 @@ namespace AdminService.Controllers
         {
             _configuration = configuration;
         }
+
         [Route("/team")]
         public async Task<IActionResult> Index()
         {
@@ -38,16 +40,27 @@ namespace AdminService.Controllers
             ViewData["TeamCountforDisplay"] = data.Count();
             return View(data);
         }
+
         [Route("/team/create")]
-        public async Task<IActionResult> Create(Team team)
+        public ActionResult Create(string ErrMsg){
+            ViewData["ErrMsg"]=ErrMsg;
+            ViewData["Submitted?"]="false";
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTeam()
         {
-            //only for testing
-            team = new Team();
-            team.Name = "Demo Post School";
+            Team team = new Team();
+            team.Name = HttpContext.Request.Form["Name"].ToString();
             Config config = new Config();
-            config.RouterIpAddress = "0.0.0.0";
-            config.RouterPort = 8080;
-            config.ConnectionType = 0;
+            config.RouterIpAddress = HttpContext.Request.Form["IP"].ToString();
+            try {config.RouterPort = Convert.ToInt32(HttpContext.Request.Form["Port"].ToString());} 
+            catch {
+                ViewData["ErrMsg"] = "Invaild Port format!";
+                ViewData["Submitted?"] = "false";
+                return View("Create"); 
+            }
+            //config.ConnectionType = 0;
             team.Config = config;
             //
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/create";
@@ -56,19 +69,25 @@ namespace AdminService.Controllers
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
                 try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
-                catch { ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View(); }
+                catch 
+                { 
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; 
+                    return View("Create"); 
+                }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
-                //Request was successful Response Conatins Newly Created Team as raw json 
+                //Request was successful if Response Conatins Newly Created Team as raw json 
                 if (resContent.Contains("routerIpAddress")) ViewData["UpstreamResponse"] = "Success. The team has been created.";
                 if (resContent.Contains(":415,")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View();
+                return View("Create");
             }
         }
+
         [Route("/team/delete")]
         public ActionResult Delete()
         {
+            ViewData["Submitted?"] = "false";
             return View();
         }
         [HttpPost]
