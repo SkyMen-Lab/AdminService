@@ -1,16 +1,17 @@
-using System.Linq;
-using Newtonsoft.Json;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Collections;
-using System.Text;
 using System;
-using Microsoft.AspNetCore.Mvc;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Text.Encodings.Web;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using AdminService.Models;
 using GameStorage.Domain.Models;
-using System.Net.Http;
-using Microsoft.Extensions.Configuration;
+
 namespace AdminService.Controllers
 {
     public class TeamController : Controller
@@ -61,7 +62,11 @@ namespace AdminService.Controllers
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
                 try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
-                catch { ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View("Create"); }
+                catch 
+                { 
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; 
+                    return View("Create"); 
+                }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
                 //Request was successful Response Conatins Newly Created Team as raw json 
@@ -74,6 +79,7 @@ namespace AdminService.Controllers
         [Route("/team/delete")]
         public ActionResult Delete()
         {
+            ViewData["Submitted?"] = "false";
             return View();
         }
         [HttpPost]

@@ -2,6 +2,7 @@
     ViewData["Title"]="Team Creation Interface";
 }
 <h1>@ViewData["Title"]</h1>
+
 @if ((string)ViewData["Submitted?"]=="false")
 {
     <form asp-controller="Team" method="post">

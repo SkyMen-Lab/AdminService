@@ -5,11 +5,13 @@
 <h1>@ViewData["Title"]</h1>
 <h3>Team ID to delete:</h3>
 
-<form asp-controller="Team" method="post">
-    <input type="text" name="ID" />
-   <input type="submit" value="Delete" formaction="DeleteTeam"/>
-</form>
-
+@if ((string)ViewData["Submitted?"]=="false")
+{
+    <form asp-controller="Team" method="post">
+        <input type="text" name="ID" />
+        <input type="submit" value="Delete" formaction="DeleteTeam"/>
+    </form>
+}
 
 <div>
     <p>@ViewData["UpstreamResponse"]</p>
