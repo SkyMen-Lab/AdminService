@@ -5,11 +5,11 @@
 <h1>@ViewData["Title"]</h1>
 <h3>Team ID to delete:</h3>
 
-@using (Html.BeginForm("Delete","team",FormMethod.Post)) 
-{
-   <input type="text" name="ID" id="ID" />
-   <input type="submit" value="Delete" />
-}
+<form asp-controller="Team" method="post">
+    <input type="text" name="ID" />
+   <input type="submit" value="Delete" formaction="DeleteTeam"/>
+</form>
+
 
 <div>
     <p>@ViewData["UpstreamResponse"]</p>

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
+using System;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using AdminService.Models;
@@ -66,25 +67,32 @@ namespace AdminService.Controllers
             }
         }
         [Route("/team/delete")]
-        public async Task<IActionResult> Delete(string ID)
+        public ActionResult Delete()
         {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/delete/" + ID;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeleteTeam()
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/delete/" + HttpContext.Request.Form["ID"].ToString();
             using (HttpClient client = new HttpClient())
             {
                 var res = new HttpResponseMessage();
-                try {  
-                    res = await client.DeleteAsync(baseUrl); 
-                } catch
+                try
                 {
-                ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; 
-                ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; 
-                return View(); 
+                    res = await client.DeleteAsync(baseUrl);
+                }
+                catch
+                {
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService";
+                    ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
+                    return View("Delete");
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains("winningRate")) ViewData["UpstreamResponse"] = "Success. The team has been deleted.";
                 if (resContent.Contains(":404,")) ViewData["UpstreamResponse"] = "Error: The code is not vaild.";
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View();
+                return View("Delete");
             }
         }
     }
