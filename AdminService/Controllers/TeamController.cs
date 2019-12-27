@@ -21,6 +21,7 @@ namespace AdminService.Controllers
         {
             _configuration = configuration;
         }
+
         [Route("/team")]
         public async Task<IActionResult> Index()
         {
@@ -39,20 +40,26 @@ namespace AdminService.Controllers
             ViewData["TeamCountforDisplay"] = data.Count();
             return View(data);
         }
+
         [Route("/team/create")]
-        public ActionResult Create(){
+        public ActionResult Create(string ErrMsg){
+            ViewData["ErrMsg"]=ErrMsg;
             ViewData["Submitted?"]="false";
             return View();
         }
         [HttpPost]
         public async Task<IActionResult> CreateTeam()
         {
-            //only for testing
             Team team = new Team();
             team.Name = HttpContext.Request.Form["Name"].ToString();
             Config config = new Config();
             config.RouterIpAddress = HttpContext.Request.Form["IP"].ToString();
-            config.RouterPort = Convert.ToInt32(HttpContext.Request.Form["Port"].ToString());
+            try {config.RouterPort = Convert.ToInt32(HttpContext.Request.Form["Port"].ToString());} 
+            catch {
+                ViewData["ErrMsg"] = "Invaild Port format!";
+                ViewData["Submitted?"] = "false";
+                return View("Create"); 
+            }
             //config.ConnectionType = 0;
             team.Config = config;
             //
@@ -69,13 +76,14 @@ namespace AdminService.Controllers
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
-                //Request was successful Response Conatins Newly Created Team as raw json 
+                //Request was successful if Response Conatins Newly Created Team as raw json 
                 if (resContent.Contains("routerIpAddress")) ViewData["UpstreamResponse"] = "Success. The team has been created.";
                 if (resContent.Contains(":415,")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View("Create");
             }
         }
+
         [Route("/team/delete")]
         public ActionResult Delete()
         {
