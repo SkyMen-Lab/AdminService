@@ -39,15 +39,20 @@ namespace AdminService.Controllers
             return View(data);
         }
         [Route("/team/create")]
-        public async Task<IActionResult> Create(Team team)
+        public ActionResult Create(){
+            ViewData["Submitted?"]="false";
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateTeam()
         {
             //only for testing
-            team = new Team();
-            team.Name = "Demo Post School";
+            Team team = new Team();
+            team.Name = HttpContext.Request.Form["Name"].ToString();
             Config config = new Config();
-            config.RouterIpAddress = "0.0.0.0";
-            config.RouterPort = 8080;
-            config.ConnectionType = 0;
+            config.RouterIpAddress = HttpContext.Request.Form["IP"].ToString();
+            config.RouterPort = Convert.ToInt32(HttpContext.Request.Form["Port"].ToString());
+            //config.ConnectionType = 0;
             team.Config = config;
             //
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/create";
@@ -56,14 +61,14 @@ namespace AdminService.Controllers
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
                 try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
-                catch { ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View(); }
+                catch { ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; return View("Create"); }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
                 //Request was successful Response Conatins Newly Created Team as raw json 
                 if (resContent.Contains("routerIpAddress")) ViewData["UpstreamResponse"] = "Success. The team has been created.";
                 if (resContent.Contains(":415,")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View();
+                return View("Create");
             }
         }
         [Route("/team/delete")]
