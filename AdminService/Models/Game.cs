@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace GameStorage.Domain.Models
+namespace AdminService.Models
 {
     public class Game
     {

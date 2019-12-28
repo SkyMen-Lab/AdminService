@@ -10,7 +10,6 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using AdminService.Models;
-using GameStorage.Domain.Models;
 
 namespace AdminService.Controllers
 {
@@ -42,27 +41,21 @@ namespace AdminService.Controllers
         }
 
         [Route("/team/create")]
-        public ActionResult Create(string ErrMsg){
-            ViewData["ErrMsg"]=ErrMsg;
-            ViewData["Submitted?"]="false";
+        [HttpGet]
+        public IActionResult Create(string ErrMsg)
+        {
+            ViewData["ErrMsg"] = ErrMsg;
             return View();
         }
+        [BindProperty]
+        public Team team {get;set;}
         [HttpPost]
-        public async Task<IActionResult> CreateTeam()
+        public async Task<IActionResult> Create()
         {
-            Team team = new Team();
-            team.Name = HttpContext.Request.Form["Name"].ToString();
-            Config config = new Config();
-            config.RouterIpAddress = HttpContext.Request.Form["IP"].ToString();
-            try {config.RouterPort = Convert.ToInt32(HttpContext.Request.Form["Port"].ToString());} 
-            catch {
-                ViewData["ErrMsg"] = "Invaild Port format!";
-                ViewData["Submitted?"] = "false";
-                return View("Create"); 
+            if (!ModelState.IsValid)
+            {
+                return View();
             }
-            //config.ConnectionType = 0;
-            team.Config = config;
-            //
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/create";
             using (HttpClient client = new HttpClient())
             {
