@@ -3,57 +3,49 @@
     ViewData["Title"]="Team Management Interface";
 }
 <body>
-    <h1>@ViewData["Title"]</h1>
-    @if ((int)ViewData["TeamCountforDisplay"]==-1){
-          <h3>Connection Failure: Connection was refused while connecting to GameStorageService</h3>
-        }
-    else
-    {
-      <h2 style=color:purple>Quick Links</h2>
-        <div>
-      <a href="/team/create">Team Creation</a>
-    </div>
-    <div>
-      <a href="/team/delete">Team Deletion (Using Team Code)</a>
-    </div>
-      
-      <h2>Top Team Infomation</h2>
+    <h2>Top Team Infomation</h2>
+    <a href="/team/create">Create team</a>
       <p>This page will display the top 10 team in our database</p>
-    
-      @if ((int) ViewData["TeamCountforDisplay"] == 0)
-      {
-        <p>Sorry, no team was found in the database.</p>
-      }
-      else
-      {
-        @for (int i = 0; i < (int) ViewData["TeamCountforDisplay"]; i++)
-        {
-          <table width="600" border="3">
-            <tbody>
-            <tr>
-              <th scope="row">ID</th>
-              <td>@Model[i].Id</td>
-            </tr>
-            <tr>
-              <th scope="row">Code</th>
-              <td>@Model[i].Code</td>
-            </tr>
-            <tr>
-              <th scope="row">Name</th>
-              <td>@Model[i].Name</td>
-            </tr>
-            <tr>
-              <th scope="row">Rank</th>
-              <td>@Model[i].Rank</td>
-            </tr>
-            <tr>
-              <th scope="row">ConfigID</th>
-              <td>@Model[i].ConfigId</td>
-            </tr>
-            </tbody>
-          </table>
-          <h3></h3>
-        }
-      }
-    }
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Code)
+            </th>
+            <th>g
+                @Html.DisplayNameFor(model => model[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].WinningRate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WinningRate)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Code">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Code">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Code">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
 </body>
