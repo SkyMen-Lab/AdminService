@@ -17,6 +17,9 @@
         <input type="submit" />
         <div style=color:red>@ViewData["ErrMsg"]</div>
     </form>
-
-<h3>@ViewData["UpstreamResponse"]</h3>
-<p>@ViewData["UpstreamRawResponse"]</p>
+    
+<div>
+    <h3>@ViewData["UpstreamResponse"]</h3>
+    <p>@ViewData["UpstreamRawResponse"]</p>
+    <div><a asp-action="Index">Go back to Team lists</a></div>
+</div>

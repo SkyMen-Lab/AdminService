@@ -76,17 +76,10 @@ namespace AdminService.Controllers
                 return View("Create");
             }
         }
-
-        [Route("/team/delete")]
-        public ActionResult Delete()
+        [Route("/team/delete/{Code}")]
+        public async Task<IActionResult> Delete(string Code)
         {
-            ViewData["Submitted?"] = "false";
-            return View();
-        }
-        [HttpPost]
-        public async Task<IActionResult> DeleteTeam()
-        {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/delete/" + HttpContext.Request.Form["ID"].ToString();
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/delete/" + Code;
             using (HttpClient client = new HttpClient())
             {
                 var res = new HttpResponseMessage();
@@ -98,13 +91,13 @@ namespace AdminService.Controllers
                 {
                     ViewData["UpstreamResponse"] = "Failed to connect to StorageService";
                     ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
-                    return View("Delete");
+                    return View();
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains("winningRate")) ViewData["UpstreamResponse"] = "Success. The team has been deleted.";
                 if (resContent.Contains(":404,")) ViewData["UpstreamResponse"] = "Error: The code is not vaild.";
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View("Delete");
+                return View();
             }
         }
     }
