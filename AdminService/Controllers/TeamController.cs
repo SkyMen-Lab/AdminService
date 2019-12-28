@@ -22,6 +22,7 @@ namespace AdminService.Controllers
         }
 
         [Route("/team")]
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
@@ -34,9 +35,8 @@ namespace AdminService.Controllers
                     string jsonContent = await res.Content.ReadAsStringAsync();
                     data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
                 }
-                catch { ViewData["TeamCountforDisplay"] = -1; return View(); }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
             }
-            ViewData["TeamCountforDisplay"] = data.Count();
             return View(data);
         }
 

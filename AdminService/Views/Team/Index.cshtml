@@ -2,6 +2,13 @@
 @{
     ViewData["Title"]="Team Management Interface";
 }
+
+@if ((string)ViewData["ErrCode"]=="-1") 
+{
+  <h1 style=color:red>Connection Failed</h1>
+  <h3 style=color:red>Connection to Storage Service was Unsuccessful</h3>
+} else 
+{
 <body>
     <h2>Top Team Infomation</h2>
     <a href="/team/create">Create team</a>
@@ -15,7 +22,7 @@
             <th>
                 @Html.DisplayNameFor(model => model[0].Code)
             </th>
-            <th>g
+            <th>
                 @Html.DisplayNameFor(model => model[0].Name)
             </th>
             <th>
@@ -49,3 +56,4 @@
     </tbody>
 </table>
 </body>
+}
