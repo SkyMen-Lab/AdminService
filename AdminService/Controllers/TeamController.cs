@@ -100,5 +100,24 @@ namespace AdminService.Controllers
                 return View();
             }
         }
+        [Route("/team/detail/{Code}")]
+        public async Task<IActionResult> Detail(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
+            Team TeamDetail;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    TeamDetail = (JsonConvert.DeserializeObject<Team>(jsonContent));
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (jsonContent.Contains(":404")) ViewData["ErrCode"]="404";
+            return View(TeamDetail);
+        }
     }
 }
