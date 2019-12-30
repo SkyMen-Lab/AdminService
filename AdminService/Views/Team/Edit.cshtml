@@ -5,7 +5,13 @@
 
 <h1>@ViewData["Title"]</h1>
 
-<div><h2>@ViewData["UpstreamResponse"]</h2></div>
+@switch ((string)ViewData["ErrCode"])
+{
+    case "-1": <h2 style=color:red>Error: Upstream Storage Server was Unreachable</h2> break;
+    case "404" : <h2 style=color:red>Error: The requested team was not found</h2> break;
+    default : 
+
+    <div><h2>@ViewData["UpstreamResponse"]</h2></div>
 
 <div class="row">
     <div class="col-md-4">
@@ -50,6 +56,8 @@
 <div>
     <a asp-action="Detail" asp-route-id="@Model.Code">Back to detail page</a>
 </div>
+    break;
+}
 <div>
     <a asp-action="Index">Back to Index</a>
 </div>

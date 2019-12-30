@@ -173,13 +173,13 @@ namespace AdminService.Controllers
             Team TeamEdit;
             string jsonContent;
             using (HttpClient client = new HttpClient())
-            {
+           {
                 try
                 {
                     using HttpResponseMessage res = await client.GetAsync(baseUrl);
                     jsonContent = await res.Content.ReadAsStringAsync();
                     TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
-                }
+                } 
                 catch { ViewData["ErrCode"] = "-1"; return View(); }
             }
             if (jsonContent.Contains(":404")) ViewData["ErrCode"] = "404";
@@ -192,7 +192,6 @@ namespace AdminService.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewData["UpstreamResponse"] = "Invaild Model";
                 return View(TeamConfigEdited);
             }
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/config/update/" + TeamEdited.Code;
@@ -208,6 +207,7 @@ namespace AdminService.Controllers
                 catch { ViewData["ErrCode"] = "-1"; return View(TeamConfigEdited); }
             }
             if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+            if (jsonContent.Contains(":400")) ViewData["UpstreamResponse"] = "BadRequest: Router and IP are already in use or invalid";
             return View(TeamConfigEdited);
         }
     }
