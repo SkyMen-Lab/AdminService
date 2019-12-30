@@ -119,5 +119,49 @@ namespace AdminService.Controllers
             if (jsonContent.Contains(":404")) ViewData["ErrCode"]="404";
             return View(TeamDetail);
         }
+        [Route("/team/edit/{Code}")]
+        [HttpGet]
+        public async Task<IActionResult> Edit(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
+            Team TeamEdit;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (jsonContent.Contains(":404")) ViewData["ErrCode"] = "404";
+            return View(TeamEdit);
+        }
+        [BindProperty]
+        public Team TeamEdited {get;set;}
+        [HttpPost]
+        public async Task<IActionResult> Edit()
+        {
+            if (!ModelState.IsValid){
+                ViewData["UpstreamResponse"] = "Invaild Model";
+                return View(TeamEdited);
+            }
+                string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/update/" + TeamEdited.Code;
+                string jsonContent;
+                using (HttpClient client = new HttpClient())
+                {
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(TeamEdited);
+                        HttpResponseMessage res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                        jsonContent = await res.Content.ReadAsStringAsync();
+                    }
+                    catch { ViewData["ErrCode"] = "-1"; return View(); }
+                }
+                if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+                return View(TeamEdited);
+        }
     }
 }

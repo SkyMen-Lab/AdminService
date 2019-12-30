@@ -10,7 +10,7 @@ namespace AdminService.Models
     {
         public int Id { get; set; }
         public string Code {get; set;}
-        [Required, MinLength(2, ErrorMessage = "Team name must at least 3 characters")]
+        [Required, MinLength(3, ErrorMessage = "Team name must at least 3 characters")]
         public string Name {get;set;}
         public int Rank { get; set; }
         public double WinningRate { get; set; }
