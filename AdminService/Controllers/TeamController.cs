@@ -48,7 +48,7 @@ namespace AdminService.Controllers
             return View();
         }
         [BindProperty]
-        public Team team {get;set;}
+        public Team team { get; set; }
         [HttpPost]
         public async Task<IActionResult> Create()
         {
@@ -62,10 +62,10 @@ namespace AdminService.Controllers
                 var json = JsonConvert.SerializeObject(team);
                 var res = new HttpResponseMessage();
                 try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); }
-                catch 
-                { 
-                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;"; 
-                    return View("Create"); 
+                catch
+                {
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
+                    return View("Create");
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
@@ -116,8 +116,99 @@ namespace AdminService.Controllers
                 }
                 catch { ViewData["ErrCode"] = "-1"; return View(); }
             }
-            if (jsonContent.Contains(":404")) ViewData["ErrCode"]="404";
+            if (jsonContent.Contains(":404")) ViewData["ErrCode"] = "404";
             return View(TeamDetail);
+        }
+        [Route("/team/edit/{Code}")]
+        [HttpGet]
+        public async Task<IActionResult> Edit(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
+            Team TeamEdit;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (jsonContent.Contains(":404")) ViewData["ErrCode"] = "404";
+            return View(TeamEdit);
+        }
+        [BindProperty]
+        public Team TeamEdited { get; set; }
+        [HttpPost]
+        public async Task<IActionResult> Edit()
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["UpstreamResponse"] = "Invaild Model";
+                return View(TeamEdited);
+            }
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/update/" + TeamEdited.Code;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    var json = JsonConvert.SerializeObject(TeamEdited);
+                    HttpResponseMessage res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+            return View(TeamEdited);
+        }
+
+        [Route("/team/editconfig/{Code}")]
+        [HttpGet]
+        public async Task<IActionResult> EditConfig(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
+            Team TeamEdit;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+           {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
+                } 
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (jsonContent.Contains(":404")) ViewData["ErrCode"] = "404";
+            return View(TeamEdit);
+        }
+        [BindProperty]
+        public Team TeamConfigEdited { get; set; }
+        [HttpPost]
+        public async Task<IActionResult> EditConfig()
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(TeamConfigEdited);
+            }
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/config/update/" + TeamEdited.Code;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    var json = JsonConvert.SerializeObject(TeamConfigEdited.Config);
+                    HttpResponseMessage res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(TeamConfigEdited); }
+            }
+            if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+            if (jsonContent.Contains(":400")) ViewData["UpstreamResponse"] = "BadRequest: Router and IP are already in use or invalid";
+            return View(TeamConfigEdited);
         }
     }
 }

@@ -8,12 +8,12 @@
         function ConfirmDel(){
             var usrSelection = confirm("Are you sure you want to delete this team?");
             if (usrSelection==true){
-                var usrInput = prompt("Please enter the Name of the team to CONFIRM DELETION","School Name Here");
+                var usrInput = prompt("Please enter the Name of the team to CONFIRM DELETION","Team Name Here");
                 if (usrInput=="@Model.Name") {
                 window.location.href = "/team/delete/@Model.Code";
                 }
                 else {
-                    alert("School name does not match, Operation canceled.");
+                    alert("Team name does not match, Operation canceled.");
                 }
             }else {
                 alert("The team will not be deleted");
@@ -65,9 +65,10 @@
 </div>
 <div style=color:red>
     <h2>DANGER ZONE</h2>
-    <button onclick="ConfirmDel()">PROCEED TO DELETE</button>
+    <button class="btn btn-primary" onclick="ConfirmDel()">PROCEED TO DELETE</button>
     <p>WARNING: THIS ACTION IS IRREVERSEABLE!!!</p>
 </div>
 }
+<div><a asp-action="Edit" asp-route-id="@Model.Code">(Advanced) Edit Team</a></div>
 <div><a asp-action="Index">Go back to Team lists</a></div>
 </html>

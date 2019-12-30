@@ -1,0 +1,63 @@
+@model AdminService.Models.Team
+@{
+    ViewData["Title"]="Team Edit Interface";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@switch ((string)ViewData["ErrCode"])
+{
+    case "-1": <h2 style=color:red>Error: Upstream Storage Server was Unreachable</h2> break;
+    case "404" : <h2 style=color:red>Error: The requested team was not found</h2> break;
+    default : 
+
+    <div><h2>@ViewData["UpstreamResponse"]</h2></div>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input class="form-control" asp-for="Id" style="background-color: #eee;" readonly />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Code" class="control-label"></label>
+                <input class="form-control" asp-for="Code" style="background-color: #eee;" readonly />
+                <span asp-validation-for="Code" class="text-danger"></span>
+            </div>
+            <input type="hidden" asp-for="Config.RouterIpAddress" />
+            <input type="hidden" asp-for="Config.RouterPort" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Rank" class="control-label"></label>
+                <input asp-for="Rank" class="form-control" />
+                <span asp-validation-for="Rank" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="WinningRate" class="control-label"></label>
+                <input asp-for="WinningRate" class="form-control" />
+                <span asp-validation-for="WinningRate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <a asp-action="EditConfig" asp-route-id="@Model.Code">(Advanced) Edit team configurations</a>
+</div>
+<div>
+    <a asp-action="Detail" asp-route-id="@Model.Code">Back to detail page</a>
+</div>
+    break;
+}
+<div>
+    <a asp-action="Index">Back to Index</a>
+</div>
