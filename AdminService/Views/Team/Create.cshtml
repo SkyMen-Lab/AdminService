@@ -3,20 +3,37 @@
     ViewData["Title"]="Team Creation Interface";
 }
 <h1>@ViewData["Title"]</h1>
-<div>
-    <form method="post">
-        <div>School Name</div>
-        <input asp-for="Name" />
-        <div>RouterIPAddress</div>
-        <input asp-for="Config.RouterIpAddress" />
-        <div>Port</div>
-        <input asp-for="Config.RouterPort" />
-        <div>ConnectionType (Optional)</div>
-        <input asp-for="Config.ConnectionType" />
-        <p></p>
-        <input type="submit" />
-        <div style=color:red>@ViewData["ErrMsg"]</div>
-    </form>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.RouterIpAddress" class="control-label"></label>
+                <input asp-for="Config.RouterIpAddress" class="form-control" />
+                <span asp-validation-for="Config.RouterIpAddress" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.RouterPort" class="control-label"></label>
+                <input asp-for="Config.RouterPort" class="form-control" />
+                <span asp-validation-for="Config.RouterPort" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Config.ConnectionType" class="control-label"></label>
+                <input asp-for="Config.ConnectionType" class="form-control" />
+                <span asp-validation-for="Config.ConnectionType" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Submit" class="btn btn-primary" />
+            </div>
+            <div style=color:red>@ViewData["ErrMsg"]</div>
+        </form>
+    </div>
  </div>   
 <div>
     <p></p>
