@@ -65,10 +65,11 @@
 </div>
 <div style=color:red>
     <h2>DANGER ZONE</h2>
-    <button class="btn btn-primary" onclick="ConfirmDel()">PROCEED TO DELETE</button>
     <p>WARNING: THIS ACTION IS IRREVERSEABLE!!!</p>
+    <button class="btn btn-primary" onclick="ConfirmDel()">PROCEED TO DELETE</button>
 </div>
 }
+<br>
 <div><a asp-action="Edit" asp-route-id="@Model.Code">(Advanced) Edit Team</a></div>
 <div><a asp-action="Index">Go back to Team lists</a></div>
 </html>

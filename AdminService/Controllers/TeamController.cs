@@ -161,7 +161,7 @@ namespace AdminService.Controllers
                 }
                 catch { ViewData["ErrCode"] = "-1"; return View(); }
             }
-            if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+            if (String.IsNullOrEmpty(jsonContent)) {ViewData["SuccessRedirectCode"] = TeamEdited.Code; return View("EditSuccess");}
             return View(TeamEdited);
         }
 
@@ -206,7 +206,7 @@ namespace AdminService.Controllers
                 }
                 catch { ViewData["ErrCode"] = "-1"; return View(TeamConfigEdited); }
             }
-            if (String.IsNullOrEmpty(jsonContent)) ViewData["UpstreamResponse"] = "Success, the team has been updated.";
+            if (String.IsNullOrEmpty(jsonContent)) { ViewData["SuccessRedirectCode"] = TeamConfigEdited.Code; return View("EditSuccess"); }
             if (jsonContent.Contains(":400")) ViewData["UpstreamResponse"] = "BadRequest: Router and IP are already in use or invalid";
             return View(TeamConfigEdited);
         }
