@@ -70,7 +70,7 @@ namespace AdminService.Controllers
                 string resContent = await res.Content.ReadAsStringAsync();
                 if (resContent.Contains(":409,")) ViewData["UpstreamResponse"] = "409 Error: An identical team already exists";
                 //Request was successful if Response Conatins Newly Created Team as raw json 
-                if (resContent.Contains("routerIpAddress")) ViewData["UpstreamResponse"] = "Success. The team has been created.";
+                if (resContent.Contains("routerIpAddress")) {ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Team>(resContent).Code; return View("CreateSuccess");}
                 if (resContent.Contains(":415,")) ViewData["UpstreamResponse"] = "415 Error: Unsupported Format";
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View("Create");
