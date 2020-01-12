@@ -1,0 +1,55 @@
+@model List<AdminService.Models.Game>
+@{
+    ViewData["Title"]="Game Management Interface";
+}
+<h1>@ViewData["Title"]</h1>
+<h2>Ongoing Games</h2>
+@if (Model.Count==0) {<h2>There isn't any ongoing games now.</h2>} else{
+    <table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].State)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model[0].DurationMinutes)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.State)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DurationMinutes)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Code">Edit</a> |
+                <a asp-action="Detail" asp-route-id="@item.Code">Details</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+}
+<a href="/game/history">History Games</a>
