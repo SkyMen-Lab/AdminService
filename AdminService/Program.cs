@@ -21,7 +21,7 @@ namespace AdminService
             .Build();
 
             Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
+            .MinimumLevel.Information()
             .Enrich.FromLogContext()
             .WriteTo.Console()
             .ReadFrom.Configuration(configuration)
