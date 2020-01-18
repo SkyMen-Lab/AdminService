@@ -12,6 +12,7 @@ For now, the dashboard is a basic ASP.NET Core MVC application with no database 
 - ASP.NET Core 3.1 MVC
 - Newtonsoft.JSON 
 - REST API
+- Serilog
 
 ## Setup
 ### Upstream API Address Setup
