@@ -28,3 +28,8 @@ All developers are always welcome to contribute to the project and open issues a
 
 ## License
 The code is licensed under the GNU General Public License v2.0
+
+### [Serilog](https://github.com/serilog/serilog)
+Copyright © 2013-2018 Serilog Contributors
+
+Licensed under Apache License 2.0
