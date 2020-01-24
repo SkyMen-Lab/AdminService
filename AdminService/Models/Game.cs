@@ -26,4 +26,12 @@ namespace AdminService.Models
         Going,
         Finished,
     }
+
+    public class GameCreation
+    {
+        public string FirstTeamCode { get; set; }
+        public string SecondTeamCode { get; set; }
+        public string Date { get; set; }
+        public int DurationMinutes { get; set; }
+    }
 }
