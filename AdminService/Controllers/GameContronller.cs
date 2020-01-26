@@ -94,7 +94,9 @@ namespace AdminService.Controllers
                 var res = new HttpResponseMessage();
                 try
                 {
-                    res = await client.PostAsync(baseUrl, new StringContent(Code, Encoding.UTF8, "application/json"));
+
+                    var json = JsonConvert.SerializeObject(new GameStartRequest(Code));
+                    res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
                     Log.Warning("A startGame request has been strated. Target Code: " + Code);
                 }
                 catch

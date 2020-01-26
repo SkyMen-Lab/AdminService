@@ -34,4 +34,9 @@ namespace AdminService.Models
         public string Date { get; set; }
         public int DurationMinutes { get; set; }
     }
+    public class GameStartRequest
+    {
+        public string Code { get; set; }
+        public GameStartRequest(string Code) {this.Code = Code;}
+    }
 }
