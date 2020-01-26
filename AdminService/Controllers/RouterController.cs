@@ -12,7 +12,7 @@ namespace AdminService.Controllers
         // GET: /router/
         public string Index()
         {
-            return HtmlEncoder.Default.Encode($"Router Management View");
+            return HtmlEncoder.Default.Encode($"Under Construction.");
         }
     }
 }
