@@ -21,6 +21,53 @@
             <th >@Model.State</th>
             <th >ID: @Model.Id</th>
         </tr>
+
+
+        <tr style="color: aqua;" >
+            <th colspan="2">Team 1</th>
+            <th colspan="2">@Model.TeamGameSummaries[0].Team.Name</th> 
+        </tr>
+        
+        <tr>
+            <th >SummaryID</th>
+            <th >@Model.TeamGameSummaries[0].Id</th>
+            <th >TeamID</th>
+            <th >@Model.TeamGameSummaries[0].TeamId</th>
+        </tr>
+        <tr>
+            <th >Winner?</th>
+            <th >@Model.TeamGameSummaries[0].IsWinner</th>
+            <th >Score</th>
+            <th >@Model.TeamGameSummaries[0].Score</th>
+        </tr>
+        <tr>
+            <th colspan="2">Players</th>
+            <th colspan="2">@Model.TeamGameSummaries[0].NumberOfPlayers</th>
+        </tr>
+
+        <tr style="color: aqua;" >
+            <th colspan="2">Team 2</th>
+            <th colspan="2">@Model.TeamGameSummaries[1].Team.Name</th> 
+        </tr>
+        
+        <tr>
+            <th >SummaryID</th>
+            <th >@Model.TeamGameSummaries[1].Id</th>
+            <th >TeamID</th>
+            <th >@Model.TeamGameSummaries[1].TeamId</th>
+        </tr>
+        <tr>
+            <th >Winner?</th>
+            <th >@Model.TeamGameSummaries[1].IsWinner</th>
+            <th >Score</th>
+            <th >@Model.TeamGameSummaries[1].Score</th>
+        </tr>
+        <tr>
+            <th colspan="2">Players</th>
+            <th colspan="2">@Model.TeamGameSummaries[1].NumberOfPlayers</th>
+        </tr>
+
+        
         <tr>
             <th >WinningCode</th>
             <th >@Model.WinnerCode</th>
