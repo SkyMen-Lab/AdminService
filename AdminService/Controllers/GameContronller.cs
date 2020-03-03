@@ -107,9 +107,8 @@ namespace AdminService.Controllers
                     return View();
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains("winningRate")) { ViewData["UpstreamResponse"] = "Success. The team has been deleted."; Log.Information("The team " + Code + " has been deleted."); }
-                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Team " + Code); }
                 ViewData["UpstreamRawResponse"] = resContent;
+                Log.Information("StartGameRequestResponse:{0}",resContent);
                 return View();
             }
         }
