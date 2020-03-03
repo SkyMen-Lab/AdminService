@@ -84,6 +84,33 @@ namespace AdminService.Controllers
             }
         }
 
+        [Route("/game/Detail/{code}")]
+        [HttpGet]
+        public async Task<IActionResult> Detail(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/" + Code;
+            Game GameDetail;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    Log.Information("Started detail request of Game " + Code);
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    GameDetail = (JsonConvert.DeserializeObject<Game>(jsonContent));
+                }
+                catch
+                {
+                    ViewData["ErrCode"] = "-1";
+                    Log.Error("Connection to StorageService Failed while processing detail request on Game " + Code + ". SocketException: Connection refused;");
+                    return View();
+                }
+            }
+            if (jsonContent.Contains(":404")) { ViewData["ErrCode"] = "404"; Log.Warning("Detail request of Game " + Code + " was not found."); }
+            return View(GameDetail);
+        }
+
         [Route("/game/StartGame/{Code}")]
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)

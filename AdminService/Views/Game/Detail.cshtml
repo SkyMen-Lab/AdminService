@@ -1,0 +1,43 @@
+@model AdminService.Models.Game
+@{
+    ViewData["Title"]="Game Details - "+Model.Code;
+}
+
+<html>
+<h1>@ViewData["Title"]</h1>
+
+@if ((string)ViewData["ErrCode"]=="404")
+{
+    <div style=color:red>
+        <h2>Error 404</h2>
+        <h3>The requested Game was not found</h3>
+    </div>
+} else {
+<div>
+<table class=table style=table-layout:fixed>
+    <tbody>
+        <tr>
+            <th colspan="2">@Model.Code</th>
+            <th >@Model.State</th>
+            <th >ID: @Model.Id</th>
+        </tr>
+        <tr>
+            <th >WinningCode</th>
+            <th >@Model.WinnerCode</th>
+            <th >Duration</th>
+            <th >@Model.DurationMinutes</th>
+        </tr>
+        <tr>
+            <th colspan="1">Date</th>
+            <th colspan="3">@Model.Date</th>
+        </tr>
+        <tr>
+            <th colspan="1">CreatedBy</th>
+            <th colspan="3">@Model.CreatedBy</th>
+        </tr>
+    </tbody>
+</table>
+</div>
+}
+
+</html>
