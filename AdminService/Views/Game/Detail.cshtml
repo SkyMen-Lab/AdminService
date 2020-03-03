@@ -67,7 +67,7 @@
             <th colspan="2">@Model.TeamGameSummaries[1].NumberOfPlayers</th>
         </tr>
 
-        
+
         <tr>
             <th >WinningCode</th>
             <th >@Model.WinnerCode</th>
@@ -86,5 +86,6 @@
 </table>
 </div>
 }
-
+<div><a asp-action="Edit" asp-route-id="@Model.Code">(Advanced) Edit Game</a></div>
+<div><a asp-action="Index">Go back to Team lists</a></div>
 </html>
