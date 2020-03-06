@@ -18,8 +18,19 @@
                 alert("The game will not be deleted");
             }
         }
+        function NoConfirmationDel(){
+            window.location.href = "/game/delete/@Model.Code";
+        }
 </script>
-<html>
+
+@if (Model.TeamGameSummaries.Count<2) {
+    <div style="color: red;">
+        <h2>Error: At least one of the team in this game has been deleted.</h2>
+        <p>This game is no longer vaild and you should delete this game.</p>
+        <button class="btn btn-primary" onclick="NoConfirmationDel()">PROCEED TO DELETE</button>
+    </div>
+} else {
+
 <h1>@ViewData["Title"]</h1>
 
 @if ((string)ViewData["ErrCode"]=="404")
@@ -108,5 +119,5 @@
 </div>
 }
 <div><a asp-action="Edit" asp-route-id="@Model.Code">(Advanced) Edit Game</a></div>
+}
 <div><a asp-action="Index">Go back to Team lists</a></div>
-</html>
