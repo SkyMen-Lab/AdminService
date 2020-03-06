@@ -111,6 +111,71 @@ namespace AdminService.Controllers
             return View(GameDetail);
         }
 
+        [Route("/game/edit/{Code}")]
+        [HttpGet]
+        public async Task<IActionResult> Edit(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/" + Code;
+            Game GameEdit;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    Log.Information("Edit request started on Game " + Code);
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                    GameEdit = (JsonConvert.DeserializeObject<Game>(jsonContent));
+                }
+                catch { ViewData["ErrCode"] = "-1"; return View(); }
+            }
+            if (jsonContent.Contains(":404"))
+            {
+                ViewData["ErrCode"] = "404";
+                Log.Error("Game " + Code + " was not found on StorageService while processing Game edit request.");
+            }
+            return View(GameEdit);
+        }
+
+        [BindProperty]
+        public Game GameEdited { get; set; }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit()
+        {
+            if (!ModelState.IsValid)
+            {
+                ViewData["UpstreamResponse"] = "Invaild Model";
+                Log.Warning("Received invalid game info on edit request");
+                return View(GameEdited);
+            }
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/update/" + GameEdited.Code;
+            string jsonContent;
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    Log.Information("Started edit request to StorageService of game " + GameEdited.Code);
+                    var json = JsonConvert.SerializeObject(GameEdited);
+                    HttpResponseMessage res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                    jsonContent = await res.Content.ReadAsStringAsync();
+                }
+                catch
+                {
+                    ViewData["ErrCode"] = "-1";
+                    Log.Error("Connection to StorageService Failed while processing edit request on Game " + GameEdited.Code + ". SocketException: Connection refused;");
+                    return View();
+                }
+            }
+            if (String.IsNullOrEmpty(jsonContent))
+            {
+                ViewData["SuccessRedirectCode"] = GameEdited.Code;
+                Log.Information("The game " + GameEdited.Code + " has been edited.");
+                return View("EditSuccess");
+            }
+            return View(GameEdited);
+        }
+
         [Route("/game/StartGame/{Code}")]
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)
@@ -156,12 +221,12 @@ namespace AdminService.Controllers
                 {
                     ViewData["UpstreamResponse"] = "Failed to connect to StorageService";
                     ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
-                    Log.Error("Connection to StorageService Failed while processing delete request on Team " + code + ". SocketException: Connection refused;");
+                    Log.Error("Connection to StorageService Failed while processing delete request on Game " + code + ". SocketException: Connection refused;");
                     return View();
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains("Code")) { ViewData["UpstreamResponse"] = "Success. The team has been deleted."; Log.Information("The team " + code + " has been deleted."); }
-                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Team " + code); }
+                if (resContent.Contains("Code")) { ViewData["UpstreamResponse"] = "Success. The Game has been deleted."; Log.Information("The Game " + code + " has been deleted."); }
+                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Game " + code); }
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View();
             }
