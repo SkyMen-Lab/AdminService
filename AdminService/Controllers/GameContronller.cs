@@ -139,5 +139,32 @@ namespace AdminService.Controllers
                 return View();
             }
         }
+
+        [Route("/game/delete/{code}")]
+        public async Task<IActionResult> Delete(string code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/delete/" + code;
+            using (HttpClient client = new HttpClient())
+            {
+                var res = new HttpResponseMessage();
+                try
+                {
+                    res = await client.DeleteAsync(baseUrl);
+                    Log.Warning("A game delete request has been strated. Target Code: " + code);
+                }
+                catch
+                {
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService";
+                    ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
+                    Log.Error("Connection to StorageService Failed while processing delete request on Team " + code + ". SocketException: Connection refused;");
+                    return View();
+                }
+                string resContent = await res.Content.ReadAsStringAsync();
+                if (resContent.Contains("Code")) { ViewData["UpstreamResponse"] = "Success. The team has been deleted."; Log.Information("The team " + code + " has been deleted."); }
+                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Team " + code); }
+                ViewData["UpstreamRawResponse"] = resContent;
+                return View();
+            }
+        }
     }
 }
