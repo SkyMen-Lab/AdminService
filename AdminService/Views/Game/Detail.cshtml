@@ -3,7 +3,34 @@
     ViewData["Title"]="Game Details - "+Model.Code;
 }
 
-<html>
+<script type="text/javascript">
+        function ConfirmDel(){
+            var usrSelection = confirm("Are you sure you want to delete this game?");
+            if (usrSelection==true){
+                var usrInput = prompt("Please enter the Code of the game to CONFIRM DELETION","Game Code Here");
+                if (usrInput=="@Model.Code") {
+                window.location.href = "/game/delete/@Model.Code";
+                }
+                else {
+                    alert("Game does not match, Operation canceled.");
+                }
+            }else {
+                alert("The game will not be deleted");
+            }
+        }
+        function NoConfirmationDel(){
+            window.location.href = "/game/delete/@Model.Code";
+        }
+</script>
+
+@if (Model.TeamGameSummaries.Count<2) {
+    <div style="color: red;">
+        <h2>Error: At least one of the team in this game has been deleted.</h2>
+        <p>This game is no longer vaild and you should delete this game.</p>
+        <button class="btn btn-primary" onclick="NoConfirmationDel()">PROCEED TO DELETE</button>
+    </div>
+} else {
+
 <h1>@ViewData["Title"]</h1>
 
 @if ((string)ViewData["ErrCode"]=="404")
@@ -85,7 +112,12 @@
     </tbody>
 </table>
 </div>
+<div style=color:red>
+    <h2>DANGER ZONE</h2>
+    <p>WARNING: THIS ACTION IS IRREVERSEABLE!!!</p>
+    <button class="btn btn-primary" onclick="ConfirmDel()">PROCEED TO DELETE</button>
+</div>
 }
 <div><a asp-action="Edit" asp-route-id="@Model.Code">(Advanced) Edit Game</a></div>
+}
 <div><a asp-action="Index">Go back to Team lists</a></div>
-</html>
