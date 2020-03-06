@@ -88,11 +88,6 @@ namespace AdminService.Controllers
         [HttpGet]
         public async Task<IActionResult> Detail(string Code)
         {
-            if (!ModelState.IsValid)
-            {
-                ViewData["ErrCode"] = "t404";
-                return View();
-            }
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/" + Code;
             Game GameDetail;
             string jsonContent;
