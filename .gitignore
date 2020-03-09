@@ -426,3 +426,4 @@ GameStorageService/obj/
 GameStorage.Domain/Migrations/
 *.db
 .DS_Store
+AdminService/appsettings.json
