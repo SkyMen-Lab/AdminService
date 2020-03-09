@@ -10,16 +10,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="FirstTeamCode" class="control-label"></label>
-                <input asp-for="FirstTeamCode" class="form-control" />
+                <input asp-for="FirstTeamCode" class="form-control" list="TeamCode"/>
+                    <datalist id = TeamCode>
+                        @foreach (var team in ViewData["TeamObject"] as IList<Team>)
+                        {
+                            <option value="@team.Code - @team.Name"></option>
+                        }
+                    </datalist>
                 <span asp-validation-for="FirstTeamCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="SecondTeamCode" class="control-label"></label>
-                <input asp-for="SecondTeamCode" class="form-control" />
+                <input asp-for="SecondTeamCode" class="form-control" list="TeamCode"/>
                 <span asp-validation-for="SecondTeamCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
+                <label class="control-label">Date (yyyy-mm-ddThh:mm)</label>
                 <input asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>

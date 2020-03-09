@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,31 +44,75 @@ namespace AdminService.Controllers
             return View(data);
         }
 
+        public async Task<List<Team>> getTeamObject()
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
+            List<Team> data = new List<Team>();
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    string jsonContent = await res.Content.ReadAsStringAsync();
+                    data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
+                    Log.Information("Team index requested. Team Count: " + data.Count);
+                }
+                catch
+                {
+                    Log.Error("Connection to StorageService Failed on team info request. SocketException: Connection refused;");
+                }
+            }
+            return data;
+        }
+
         [Route("/game/create")]
         [HttpGet]
         public IActionResult Create(string ErrMsg)
         {
-            ViewData["ErrMsg"] = ErrMsg;
-            Log.Information("Creation Page requested.");
-            return View();
+            Log.Information("Creation Page requested. Team index requested.");
+            ViewData["TeamObject"]= getTeamObject().Result;
+            return View(onCreate);
         }
 
         [BindProperty]
-        public GameCreation GameOnCreate { get; set; }
+        public GameCreation onCreate {get; set;}
 
         [HttpPost]
         public async Task<IActionResult> Create()
         {
+            //Truncate Code to 5 character
+            onCreate.FirstTeamCode = onCreate.FirstTeamCode.Substring(0, 5);
+            onCreate.SecondTeamCode = onCreate.SecondTeamCode.Substring(0, 5);
+            if (onCreate.FirstTeamCode == onCreate.SecondTeamCode)
+            {
+                this.ModelState.AddModelError("FirstTeamCode","The team can not be identical");
+                this.ModelState.AddModelError("SecondTeamCode", "The team can not be identical");
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View("Create");
+            }
+            var timeFromNow = Convert.ToDateTime(onCreate.Date) - DateTime.Now;
+            if (timeFromNow.TotalMinutes<1)
+            {
+                this.ModelState.AddModelError("Date","Past event is not permitted.");
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View("Create");
+            }
             if (!ModelState.IsValid)
             {
-                return View();
+                //fetch team data for retry  
+                
+                return View("Create");
             }
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/create";
             using (HttpClient client = new HttpClient())
             {
-                var json = JsonConvert.SerializeObject(GameOnCreate);
+                var json = JsonConvert.SerializeObject(onCreate);
                 var res = new HttpResponseMessage();
-                try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); Log.Information("Creation Request started to StorageService: Game Id = " + GameOnCreate.FirstTeamCode); }
+                try 
+                { 
+                    res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); 
+                    Log.Information("Creation Request started to StorageService: Game Id = " + onCreate.FirstTeamCode); 
+                }
                 catch
                 {
                     ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
@@ -75,12 +120,18 @@ namespace AdminService.Controllers
                     return View("Create");
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains(":409,")) { ViewData["UpstreamResponse"] = "409 Error: An identical team already exists"; Log.Warning("StorageService reported 409 Error: Identical Team"); }
-                //Request was successful if Response Conatins Newly Created Team as raw json 
-                if (resContent.Contains("routerIpAddress")) { ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; Log.Information("Game has been created with code "); return View("CreateSuccess"); }
-                if (resContent.Contains(":415,")) { ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; Log.Warning("StorageService reported 415 Error: Unsupported Format"); }
+                //Success
+                if (res.StatusCode==HttpStatusCode.Created) 
+                { 
+                    ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; 
+                    Log.Information("Game has been created with code "); 
+                    return View("CreateSuccess"); 
+                }
+                //Error
+                ViewData["UpstreamResponse"] = "BadRequest 400";
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View("Create");
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View();
             }
         }
 
@@ -99,6 +150,11 @@ namespace AdminService.Controllers
                     using HttpResponseMessage res = await client.GetAsync(baseUrl);
                     jsonContent = await res.Content.ReadAsStringAsync();
                     GameDetail = (JsonConvert.DeserializeObject<Game>(jsonContent));
+                    if (res.StatusCode==HttpStatusCode.NotFound) 
+                    { 
+                        ViewData["ErrCode"] = "404"; 
+                        Log.Warning("Detail request of Game " + Code + " was not found."); 
+                    }
                 }
                 catch
                 {
@@ -107,7 +163,6 @@ namespace AdminService.Controllers
                     return View();
                 }
             }
-            if (jsonContent.Contains(":404")) { ViewData["ErrCode"] = "404"; Log.Warning("Detail request of Game " + Code + " was not found."); }
             return View(GameDetail);
         }
 
@@ -180,7 +235,7 @@ namespace AdminService.Controllers
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)
         {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start";
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start/"+Code;
             using (HttpClient client = new HttpClient())
             {
                 var res = new HttpResponseMessage();
@@ -214,8 +269,18 @@ namespace AdminService.Controllers
                 var res = new HttpResponseMessage();
                 try
                 {
-                    res = await client.DeleteAsync(baseUrl);
                     Log.Warning("A game delete request has been strated. Target Code: " + code);
+                    res = await client.DeleteAsync(baseUrl);
+                    if (res.StatusCode==HttpStatusCode.OK) 
+                    { 
+                        ViewData["UpstreamResponse"] = "Success. The Game has been deleted."; 
+                        Log.Information("The Game " + code + " has been deleted."); 
+                    }
+                    if (res.StatusCode==HttpStatusCode.NotFound) 
+                    { 
+                        ViewData["UpstreamResponse"] = "Error: The code is not vaild."; 
+                        Log.Error("Invaild delete request on Game " + code); 
+                    }
                 }
                 catch
                 {
@@ -225,8 +290,6 @@ namespace AdminService.Controllers
                     return View();
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains("Code")) { ViewData["UpstreamResponse"] = "Success. The Game has been deleted."; Log.Information("The Game " + code + " has been deleted."); }
-                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Game " + code); }
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View();
             }

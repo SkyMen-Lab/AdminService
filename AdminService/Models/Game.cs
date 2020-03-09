@@ -34,6 +34,11 @@ namespace AdminService.Models
         public string Date { get; set; }
         public int DurationMinutes { get; set; }
     }
+    public class OnCreateObject
+    {
+        public List<Team> Team {get; set;}
+        public GameCreation Game {get; set;}
+    }
     public class GameStartRequest
     {
         public string Code { get; set; }
