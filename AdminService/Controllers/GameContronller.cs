@@ -43,31 +43,56 @@ namespace AdminService.Controllers
             return View(data);
         }
 
+        public async Task<List<Team>> getTeamObject()
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
+            List<Team> data = new List<Team>();
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    string jsonContent = await res.Content.ReadAsStringAsync();
+                    data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
+                    Log.Information("Team index requested. Team Count: " + data.Count);
+                }
+                catch
+                {
+                    Log.Error("Connection to StorageService Failed on team info request. SocketException: Connection refused;");
+                }
+            }
+            return data;
+        }
+
         [Route("/game/create")]
         [HttpGet]
         public IActionResult Create(string ErrMsg)
         {
-            ViewData["ErrMsg"] = ErrMsg;
-            Log.Information("Creation Page requested.");
-            return View();
+            Log.Information("Creation Page requested. Team index requested.");
+            ViewData["TeamObject"]= getTeamObject().Result;
+            return View(onCreate);
         }
 
         [BindProperty]
-        public GameCreation GameOnCreate { get; set; }
+        public GameCreation onCreate {get; set;}
 
         [HttpPost]
         public async Task<IActionResult> Create()
         {
+            //onCreate.FirstTeamCode = onCreate.FirstTeamCode.Substring(0, 5);
+            //onCreate.SecondTeamCode = onCreate.SecondTeamCode.Substring(0, 5);
+            //onCreate.Team = getTeamObject().Result;
             if (!ModelState.IsValid)
             {
-                return View();
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View("Create");
             }
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/create";
             using (HttpClient client = new HttpClient())
             {
-                var json = JsonConvert.SerializeObject(GameOnCreate);
+                var json = JsonConvert.SerializeObject(onCreate);
                 var res = new HttpResponseMessage();
-                try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); Log.Information("Creation Request started to StorageService: Game Id = " + GameOnCreate.FirstTeamCode); }
+                try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); Log.Information("Creation Request started to StorageService: Game Id = " + onCreate.FirstTeamCode); }
                 catch
                 {
                     ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
@@ -80,7 +105,7 @@ namespace AdminService.Controllers
                 if (resContent.Contains("routerIpAddress")) { ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; Log.Information("Game has been created with code "); return View("CreateSuccess"); }
                 if (resContent.Contains(":415,")) { ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; Log.Warning("StorageService reported 415 Error: Unsupported Format"); }
                 ViewData["UpstreamRawResponse"] = resContent;
-                return View("Create");
+                return View();
             }
         }
 
@@ -180,7 +205,7 @@ namespace AdminService.Controllers
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)
         {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start";
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start/"+Code;
             using (HttpClient client = new HttpClient())
             {
                 var res = new HttpResponseMessage();
