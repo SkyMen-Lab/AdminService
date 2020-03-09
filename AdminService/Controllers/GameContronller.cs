@@ -235,7 +235,7 @@ namespace AdminService.Controllers
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)
         {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start/"+Code;
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/start";
             using (HttpClient client = new HttpClient())
             {
                 var res = new HttpResponseMessage();
