@@ -14,7 +14,7 @@
                     <datalist id = TeamCode>
                         @foreach (var team in ViewData["TeamObject"] as IList<Team>)
                         {
-                            <option value="@team.Code"></option>
+                            <option value="@team.Code - @team.Name"></option>
                         }
                     </datalist>
                 <span asp-validation-for="FirstTeamCode" class="text-danger"></span>
@@ -25,7 +25,7 @@
                 <span asp-validation-for="SecondTeamCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
+                <label class="control-label">Date (yyyy-mm-ddThh:mm)</label>
                 <input asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>

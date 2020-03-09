@@ -79,11 +79,19 @@ namespace AdminService.Controllers
         [HttpPost]
         public async Task<IActionResult> Create()
         {
-            //onCreate.FirstTeamCode = onCreate.FirstTeamCode.Substring(0, 5);
-            //onCreate.SecondTeamCode = onCreate.SecondTeamCode.Substring(0, 5);
-            //onCreate.Team = getTeamObject().Result;
+            //Truncate Code to 5 character
+            onCreate.FirstTeamCode = onCreate.FirstTeamCode.Substring(0, 5);
+            onCreate.SecondTeamCode = onCreate.SecondTeamCode.Substring(0, 5);
+            if (onCreate.FirstTeamCode == onCreate.SecondTeamCode)
+            {
+                this.ModelState.AddModelError("FirstTeamCode","The team can not be identical");
+                this.ModelState.AddModelError("SecondTeamCode", "The team can not be identical");
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View("Create");
+            }
             if (!ModelState.IsValid)
             {
+                //fetch team data for retry  
                 ViewData["TeamObject"] = getTeamObject().Result;
                 return View("Create");
             }
@@ -92,7 +100,11 @@ namespace AdminService.Controllers
             {
                 var json = JsonConvert.SerializeObject(onCreate);
                 var res = new HttpResponseMessage();
-                try { res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); Log.Information("Creation Request started to StorageService: Game Id = " + onCreate.FirstTeamCode); }
+                try 
+                { 
+                    res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json")); 
+                    Log.Information("Creation Request started to StorageService: Game Id = " + onCreate.FirstTeamCode); 
+                }
                 catch
                 {
                     ViewData["UpstreamResponse"] = "Failed to connect to StorageService"; ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
@@ -100,10 +112,24 @@ namespace AdminService.Controllers
                     return View("Create");
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains(":409,")) { ViewData["UpstreamResponse"] = "409 Error: An identical team already exists"; Log.Warning("StorageService reported 409 Error: Identical Team"); }
-                //Request was successful if Response Conatins Newly Created Team as raw json 
-                if (resContent.Contains("routerIpAddress")) { ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; Log.Information("Game has been created with code "); return View("CreateSuccess"); }
-                if (resContent.Contains(":415,")) { ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; Log.Warning("StorageService reported 415 Error: Unsupported Format"); }
+                //Success
+                if (resContent.Contains("routerIpAddress")) 
+                { 
+                    ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; 
+                    Log.Information("Game has been created with code "); 
+                    return View("CreateSuccess"); 
+                }
+                //Error
+                if (resContent.Contains(":409,")) 
+                { 
+                    ViewData["UpstreamResponse"] = "409 Error: An identical team already exists"; 
+                    Log.Warning("StorageService reported 409 Error: Identical Team"); 
+                }
+                if (resContent.Contains(":415,")) 
+                { 
+                    ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; 
+                    Log.Warning("StorageService reported 415 Error: Unsupported Format"); 
+                }
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View();
             }
