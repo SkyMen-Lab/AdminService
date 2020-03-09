@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,10 +81,9 @@ namespace AdminService.Controllers
                     return View("Create");
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains(":409,")) { ViewData["UpstreamResponse"] = "409 Error: An identical team already exists"; Log.Warning("StorageService reported 409 Error: Identical Team"); }
-                //Request was successful if Response Conatins Newly Created Team as raw json 
-                if (resContent.Contains("routerIpAddress")) { ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Team>(resContent).Code; Log.Information("Team " + team.Name + " has been created with code " + team.Code); return View("CreateSuccess"); }
-                if (resContent.Contains(":415,")) { ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; Log.Warning("StorageService reported 415 Error: Unsupported Format"); }
+                if (res.StatusCode==HttpStatusCode.Conflict) { ViewData["UpstreamResponse"] = "409 Error: An identical team already exists"; Log.Warning("StorageService reported 409 Error: Identical Team"); }
+                if (res.StatusCode==HttpStatusCode.Created) { ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Team>(resContent).Code; Log.Information("Team " + team.Name + " has been created with code " + team.Code); return View("CreateSuccess"); }
+                if (res.StatusCode==HttpStatusCode.UnsupportedMediaType) { ViewData["UpstreamResponse"] = "415 Error: Unsupported Format"; Log.Warning("StorageService reported 415 Error: Unsupported Format"); }
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View("Create");
             }
@@ -109,8 +109,8 @@ namespace AdminService.Controllers
                     return View();
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
-                if (resContent.Contains("winningRate")) { ViewData["UpstreamResponse"] = "Success. The team has been deleted."; Log.Information("The team " + Code + " has been deleted."); }
-                if (resContent.Contains(":404,")) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Team " + Code); }
+                if (res.StatusCode==HttpStatusCode.OK) { ViewData["UpstreamResponse"] = "Success. The team has been deleted."; Log.Information("The team " + Code + " has been deleted."); }
+                if (res.StatusCode == HttpStatusCode.NotFound) { ViewData["UpstreamResponse"] = "Error: The code is not vaild."; Log.Error("Invaild delete request on Team " + Code); }
                 ViewData["UpstreamRawResponse"] = resContent;
                 return View();
             }
@@ -122,12 +122,13 @@ namespace AdminService.Controllers
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
             Team TeamDetail;
             string jsonContent;
+            var res = new HttpResponseMessage();
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
                     Log.Information("Started detail request of Team " + Code);
-                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    res = await client.GetAsync(baseUrl);
                     jsonContent = await res.Content.ReadAsStringAsync();
                     TeamDetail = (JsonConvert.DeserializeObject<Team>(jsonContent));
                 }
@@ -138,7 +139,7 @@ namespace AdminService.Controllers
                     return View();
                 }
             }
-            if (jsonContent.Contains(":404")) { ViewData["ErrCode"] = "404"; Log.Warning("Detail request of Team " + Code + " was not found."); }
+            if (res.StatusCode == HttpStatusCode.NotFound) { ViewData["ErrCode"] = "404"; Log.Warning("Detail request of Team " + Code + " was not found."); }
             return View(TeamDetail);
         }
 
@@ -149,18 +150,19 @@ namespace AdminService.Controllers
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
             Team TeamEdit;
             string jsonContent;
+            var res = new HttpResponseMessage();
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
                     Log.Information("Edit request started on Team " + Code);
-                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    res = await client.GetAsync(baseUrl);
                     jsonContent = await res.Content.ReadAsStringAsync();
                     TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
                 }
                 catch { ViewData["ErrCode"] = "-1"; return View(); }
             }
-            if (jsonContent.Contains(":404"))
+            if (res.StatusCode == HttpStatusCode.NotFound)
             {
                 ViewData["ErrCode"] = "404";
                 Log.Error("Team " + Code + " was not found on StorageService while processing team edit request.");
@@ -214,12 +216,13 @@ namespace AdminService.Controllers
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/code/" + Code;
             Team TeamEdit;
             string jsonContent;
+            var res = new HttpResponseMessage();
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
                     Log.Information("Started edit config request to StorageService of Team " + Code);
-                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
+                    res = await client.GetAsync(baseUrl);
                     jsonContent = await res.Content.ReadAsStringAsync();
                     TeamEdit = (JsonConvert.DeserializeObject<Team>(jsonContent));
                 }
@@ -230,7 +233,7 @@ namespace AdminService.Controllers
                     return View();
                 }
             }
-            if (jsonContent.Contains(":404"))
+            if (res.StatusCode == HttpStatusCode.NotFound)
             {
                 ViewData["ErrCode"] = "404";
                 Log.Error("Team " + Code + " was not found on StorageService while processing team edit config request.");
@@ -250,13 +253,14 @@ namespace AdminService.Controllers
             }
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/config/update/" + TeamEdited.Code;
             string jsonContent;
+            var res = new HttpResponseMessage();
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
                     Log.Information("Started edit request to StorageService of Team " + TeamConfigEdited.Code);
                     var json = JsonConvert.SerializeObject(TeamConfigEdited.Config);
-                    HttpResponseMessage res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                    res = await client.PutAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
                     jsonContent = await res.Content.ReadAsStringAsync();
                 }
                 catch
@@ -272,7 +276,7 @@ namespace AdminService.Controllers
                 Log.Information("The team config " + TeamEdited.Code + " has been edited.");
                 return View("EditSuccess");
             }
-            if (jsonContent.Contains(":400"))
+            if (res.StatusCode == HttpStatusCode.BadRequest)
             {
                 ViewData["UpstreamResponse"] = "BadRequest: Router and IP are already in use or invalid";
                 Log.Error("Bad request on team config edit " + TeamConfigEdited.Code + ": Router and IP are already in use or invalid");
