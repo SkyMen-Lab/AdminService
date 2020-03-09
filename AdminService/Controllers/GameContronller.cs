@@ -90,6 +90,13 @@ namespace AdminService.Controllers
                 ViewData["TeamObject"] = getTeamObject().Result;
                 return View("Create");
             }
+            var timeFromNow = Convert.ToDateTime(onCreate.Date) - DateTime.Now;
+            if (timeFromNow.TotalMinutes<1)
+            {
+                this.ModelState.AddModelError("Date","Past event is not permitted.");
+                ViewData["TeamObject"] = getTeamObject().Result;
+                return View("Create");
+            }
             if (!ModelState.IsValid)
             {
                 //fetch team data for retry  
@@ -114,7 +121,7 @@ namespace AdminService.Controllers
                 }
                 string resContent = await res.Content.ReadAsStringAsync();
                 //Success
-                if (res.StatusCode==HttpStatusCode.OK) 
+                if (res.StatusCode==HttpStatusCode.Created) 
                 { 
                     ViewData["SuccessRedirectCode"] = JsonConvert.DeserializeObject<Game>(resContent).Code; 
                     Log.Information("Game has been created with code "); 
