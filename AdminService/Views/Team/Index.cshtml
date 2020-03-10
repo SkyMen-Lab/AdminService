@@ -13,6 +13,14 @@
     <h1>Team Infomation</h1>
     <a href="/team/create"> Create team </a>
       <p>This page will display the top 10 team in our database</p>
+    <div>
+        <form asp-controller="Team" asp-action="Index" method="GET">
+    <p>
+        Name: <input type="text" name="searchString" value='@ViewData["searchString"]' >
+        <input type="submit" value="Filter" />
+    </p>
+</form>
+    </div>
     <table class="table">
     <thead>
         <tr>

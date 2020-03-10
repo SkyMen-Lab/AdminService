@@ -26,18 +26,26 @@ namespace AdminService.Controllers
 
         [Route("/team")]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
+            ViewData["searchString"] = searchString;
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team/list/";
             List<Team> data = new List<Team>();
+            List<Team> page = new List<Team>();
+            int n = 0;
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
-                    using HttpResponseMessage res = await client.GetAsync(baseUrl);
-                    string jsonContent = await res.Content.ReadAsStringAsync();
-                    data = (JsonConvert.DeserializeObject<List<Team>>(jsonContent));
-                    Log.Information("Team index requested. Team Count: " + data.Count);
+                    do
+                    {
+                        n++;
+                        using HttpResponseMessage res = await client.GetAsync(baseUrl+n);
+                        string jsonContent = await res.Content.ReadAsStringAsync();
+                        page=JsonConvert.DeserializeObject<List<Team>>(jsonContent);
+                        data.AddRange(page);
+                        Log.Information("Team index requested. Page = {0}. Team Count = {1}", n, data.Count);
+                    } while (page.Count!=0);
                 }
                 catch
                 {
@@ -45,6 +53,11 @@ namespace AdminService.Controllers
                     Log.Error("Connection to StorageService Failed on team info request. SocketException: Connection refused;");
                     return View();
                 }
+            }
+            if (!String.IsNullOrEmpty(searchString)) 
+            {
+                var result = data.Where(s => s.Name.ToLower().Contains(searchString.ToLower()));
+                return View(result.ToList());
             }
             return View(data);
         }
