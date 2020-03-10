@@ -26,7 +26,7 @@ namespace AdminService.Controllers
 
         [Route("/team")]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
             string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/team";
             List<Team> data = new List<Team>();
@@ -45,6 +45,11 @@ namespace AdminService.Controllers
                     Log.Error("Connection to StorageService Failed on team info request. SocketException: Connection refused;");
                     return View();
                 }
+            }
+            if (!String.IsNullOrEmpty(searchString)) 
+            {
+                var result = data.Where(s => s.Name.Contains(searchString));
+                return View(result.ToList());
             }
             return View(data);
         }
