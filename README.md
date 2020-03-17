@@ -33,3 +33,8 @@ The code is licensed under the GNU General Public License v2.0
 Copyright © 2013-2018 Serilog Contributors
 
 Licensed under Apache License 2.0
+
+### [Tempus Dominus Bootstrap 4](https://github.com/tempusdominus/bootstrap-4)
+Copyright (c) 2016 Tempus Dominus
+
+Licensed under MIT License
