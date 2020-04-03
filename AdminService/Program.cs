@@ -16,16 +16,6 @@ namespace AdminService
     {
         public static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
-            .Build();
-
-            Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Information()
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .ReadFrom.Configuration(configuration)
-            .CreateLogger();
             try
             {
                 CreateHostBuilder(args).Build().Run();
@@ -38,10 +28,21 @@ namespace AdminService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder.UseStartup<Startup>()
+                    .ConfigureAppConfiguration((hosting, config) =>
+                    {
+                        var env = hosting.HostingEnvironment;
+                        config.AddJsonFile("appsettings.json", true, true);
+                        config.AddJsonFile("appsettings.{env.EnvironmentName}.json", true, true);
+                    });
+                }).UseSerilog((hostingCtx, logger) =>
+                {
+                    logger
+                        .ReadFrom.Configuration(hostingCtx.Configuration)
+                        .Enrich.FromLogContext()
+                        .WriteTo.Console();
                 });
     }
 }
