@@ -40,6 +40,10 @@ namespace AdminService
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+                app.Use((context, next) => {
+                    context.Request.PathBase = new Microsoft.AspNetCore.Http.PathString("/admin");
+                    return next();
+                });
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
