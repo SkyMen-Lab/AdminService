@@ -9,7 +9,7 @@
             if (usrSelection==true){
                 var usrInput = prompt("Please enter the Code of the game to CONFIRM DELETION","Game Code Here");
                 if (usrInput=="@Model.Code") {
-                window.location.href = "/game/delete/@Model.Code";
+                window.location.href = "game/delete/@Model.Code";
                 }
                 else {
                     alert("Game does not match, Operation canceled.");
