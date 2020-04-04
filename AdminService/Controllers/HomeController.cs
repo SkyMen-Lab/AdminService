@@ -9,6 +9,8 @@ using AdminService.Models;
 
 namespace AdminService.Controllers
 {
+    [Route("")]
+    [Route("/home")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -18,21 +20,26 @@ namespace AdminService.Controllers
             _logger = logger;
         }
 
+        [Route("/")]
+        [Route("index")]
         public IActionResult Index()
         {
             return View();
         }
 
+        [Route("/privacy")]
         public IActionResult Privacy()
         {
             return View();
         }
 
+        [Route("/license")]
         public IActionResult License()
         {
             return View();
         }
 
+        [Route("/error")]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
