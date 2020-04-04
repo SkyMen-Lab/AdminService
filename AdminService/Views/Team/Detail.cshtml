@@ -10,7 +10,7 @@
             if (usrSelection==true){
                 var usrInput = prompt("Please enter the Name of the team to CONFIRM DELETION","Team Name Here");
                 if (usrInput=="@Model.Name") {
-                window.location.href = "/team/delete/@Model.Code";
+                window.location.href = "team/delete/@Model.Code";
                 }
                 else {
                     alert("Team name does not match, Operation canceled.");

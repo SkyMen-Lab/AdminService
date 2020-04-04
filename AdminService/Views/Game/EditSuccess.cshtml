@@ -3,4 +3,4 @@
 }
 <h1>Success. The Game has been updated.</h1>
 <p>Redirecting you to detail page....</p>
-<meta http-equiv="refresh" content="2; url=/game/detail/@ViewData["SuccessRedirectCode"]" />
+<meta http-equiv="refresh" content="2; url=@Url.Action("Detail", "Game", new { id=ViewData["SuccessRedirectCode"] })" />
