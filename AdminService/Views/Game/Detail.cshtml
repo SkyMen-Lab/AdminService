@@ -35,7 +35,7 @@
 
 @if ((string)ViewData["ErrCode"]=="404")
 {
-    <div style=color:red>
+    <div class="color-red">
         <h2>Error 404</h2>
         <h3>The requested Game was not found</h3>
     </div>
@@ -112,7 +112,7 @@
     </tbody>
 </table>
 </div>
-<div style=color:red>
+<div class="color-red">
     <h2>DANGER ZONE</h2>
     <p>WARNING: THIS ACTION IS IRREVERSEABLE!!!</p>
     <button class="btn btn-primary" onclick="ConfirmDel()">PROCEED TO DELETE</button>

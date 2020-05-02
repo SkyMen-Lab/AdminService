@@ -54,13 +54,13 @@
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
-            <div style=color:red>@ViewData["ErrMsg"]</div>
+            <div class="color-red">@ViewData["ErrMsg"]</div>
         </form>
     </div>
  </div>   
 <div>
     <p></p>
-    <h3 style=color:red>@ViewData["UpstreamResponse"]</h3>
-    <p style=color:red>@ViewData["UpstreamRawResponse"]</p>
+    <h3 class="color-red">@ViewData["UpstreamResponse"]</h3>
+    <p class="color-red">@ViewData["UpstreamRawResponse"]</p>
     <div><a asp-action="Index">Go back to Game lists</a></div>
 </div>

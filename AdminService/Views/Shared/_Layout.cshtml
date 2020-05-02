@@ -8,12 +8,13 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/iDarkModeXsProPlusMaxLimitedEdition.css"/>
 </head>
-<body>
+<body class="dark-body mono-font">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AdminService</a>
+        <nav class="dark-body navbar navbar-expand-sm navbar-toggleable-sm navbar-light custom-border-bottom box-shadow mb-3">
+            <div class="dark-body container">
+                <a class="logo-text" asp-area="" asp-controller="Home" asp-action="Index">AdminService</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -21,13 +22,13 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Team" asp-action="Index">Teams</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Team" asp-action="Index">Teams</a>
                         </li>
                     <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Game" asp-action="Index">Games</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Game" asp-action="Index">Games</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Router" asp-action="Index">K8s_Routers</a>
+                            <a class="nav-link text-white" asp-area="" asp-controller="Router" asp-action="Index">K8s_Routers</a>
                         </li>
                     </ul>
                 </div>
@@ -40,7 +41,7 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer class="custom-border-top footer text-muted">
         <div class="container">
             &copy; 2020 - TheP0ngTeam - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a> - <a asp-area="" asp-controller="Home" asp-action="License">License</a>
         </div>
