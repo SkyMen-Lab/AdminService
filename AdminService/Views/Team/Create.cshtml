@@ -25,19 +25,23 @@
             </div>
             <div class="form-group">
                 <label asp-for="Config.ConnectionType" class="control-label"></label>
-                <input asp-for="Config.ConnectionType" class="form-control" />
+                
+                <select asp-for="Config.ConnectionType" class="form-control">
+                    <option value="1">TCP</option>
+                    <option value="0">UDP</option>
+                </select>
                 <span asp-validation-for="Config.ConnectionType" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Submit" class="btn btn-primary" />
             </div>
-            <div style=color:red>@ViewData["ErrMsg"]</div>
+            <div class="color-red">@ViewData["ErrMsg"]</div>
         </form>
     </div>
  </div>   
 <div>
     <p></p>
-    <h3 style=color:red>@ViewData["UpstreamResponse"]</h3>
-    <p style=color:red>@ViewData["UpstreamRawResponse"]</p>
+    <h3 class="color-red">@ViewData["UpstreamResponse"]</h3>
+    <p class="color-red">@ViewData["UpstreamRawResponse"]</p>
     <div><a asp-action="Index">Go back to Team lists</a></div>
 </div>

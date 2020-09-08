@@ -1,0 +1,53 @@
+.dark-body {
+    color:#fff;
+    background-color: #222
+}
+.custom-border-bottom {
+    border-bottom: 1px solid #333!important;
+}
+.custom-border-top {
+    border-top: 1px solid #333!important;
+}
+.text-white {
+    color:fff
+}
+@font-face {
+    font-family: "jetbrains-mono";
+    src: url("font/JetBrainsMono-Medium.woff2") format('woff2');
+}
+.mono-font{
+    font-family: jetbrains-mono
+}
+.color-red{
+    color: #FE5952
+}
+a {
+    color:#00c9fc
+}
+a:hover {
+    color:#86DDFF
+}
+.form-control{
+    display: block;
+    width: 100%;
+    height: calc(1.5em + .75rem + 2px);
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #eee;
+    background-color: #333;
+    background-clip: padding-box;
+    border: 1px solid #444;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.logo-text {
+    color:#fff;
+    font-size: 1.1rem;
+    padding-right: 30px;
+}
+.logo-text:hover {
+    color: #ddd;
+    text-decoration: none;
+}

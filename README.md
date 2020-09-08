@@ -38,3 +38,7 @@ Licensed under Apache License 2.0
 Copyright (c) 2016 Tempus Dominus
 
 Licensed under MIT License
+
+### [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono)
+
+Licensed under Apache License 2.0
