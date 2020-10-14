@@ -45,6 +45,7 @@
                 @Html.DisplayFor(modelItem => item.DurationMinutes)
             </td>
             <td>
+                <a asp-action="SetupGame" asp-route-id="@item.Code">SetupGame</a> |
                 <a asp-action="StartGame" asp-route-id="@item.Code">StartGame</a> |
                 <a asp-action="Detail" asp-route-id="@item.Code">Details</a>
             </td>

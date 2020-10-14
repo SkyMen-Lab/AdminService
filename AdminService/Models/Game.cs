@@ -39,9 +39,9 @@ namespace AdminService.Models
         public List<Team> Team {get; set;}
         public GameCreation Game {get; set;}
     }
-    public class GameStartRequest
+    public class GameRequest
     {
         public string Code { get; set; }
-        public GameStartRequest(string Code) {this.Code = Code;}
+        public GameRequest(string Code) {this.Code = Code;}
     }
 }

@@ -231,7 +231,36 @@ namespace AdminService.Controllers
             return View(GameEdited);
         }
 
-        [Route("/game/StartGame/{Code}")]
+        [Route("/game/setupGame/{Code}")]
+        [HttpGet]
+        public async Task<IActionResult> SetupGame(string Code)
+        {
+            string baseUrl = _configuration["ServerAddress:StorageServerAddress"] + "/api/game/setup";
+            using (HttpClient client = new HttpClient())
+            {
+                var res = new HttpResponseMessage();
+                try
+                {
+
+                    var json = JsonConvert.SerializeObject(new GameRequest(Code));
+                    res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
+                    Log.Warning("A SetupGame request has been started. Target Code: " + Code);
+                }
+                catch
+                {
+                    ViewData["UpstreamResponse"] = "Failed to connect to StorageService";
+                    ViewData["UpstreamRawResponse"] = "An unhandled exception occurred while processing the request. SocketException: Connection refused;";
+                    Log.Error("Connection to StorageService Failed while processing Start request on Game " + Code + ". SocketException: Connection refused;");
+                    return View();
+                }
+                string resContent = await res.Content.ReadAsStringAsync();
+                ViewData["UpstreamRawResponse"] = resContent;
+                Log.Information("StartGameRequestResponse:{0}",resContent);
+                return View();
+            }
+        }
+        
+        [Route("/game/startGame/{Code}")]
         [HttpGet]
         public async Task<IActionResult> StartGame(string Code)
         {
@@ -242,9 +271,9 @@ namespace AdminService.Controllers
                 try
                 {
 
-                    var json = JsonConvert.SerializeObject(new GameStartRequest(Code));
+                    var json = JsonConvert.SerializeObject(new GameRequest(Code));
                     res = await client.PostAsync(baseUrl, new StringContent(json, Encoding.UTF8, "application/json"));
-                    Log.Warning("A startGame request has been strated. Target Code: " + Code);
+                    Log.Warning("A SetupGame request has been started. Target Code: " + Code);
                 }
                 catch
                 {
